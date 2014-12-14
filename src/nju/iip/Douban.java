@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -33,17 +31,17 @@ import org.jsoup.select.Elements;
 
 public class Douban {
 	
-    private static String form_email="903183867@qq.com";//登录名
+    private static String form_email="13140714569";//登录名
 	
-	private static String form_password="007008";//密码
+	private static String form_password="wqchina007008";//密码
 	
-	private static String redir="http://www.douban.com/people/mrnevermore/";//登录成功后跳转地址
+	private static String redir="http://www.douban.com/people/82881030/";//登录成功后跳转地址
 	
 	private static CloseableHttpClient httpclient = HttpClients.createDefault();
 	
 	private static String login_url="http://www.douban.com/accounts/login";//登录页面url
 	
-	private static String group_url="http://www.douban.com/group/kaopulove/";//小组地址
+	private static String group_url="http://www.douban.com/group/haixiuzu/";//小组地址
 	
     private static int retry_times=0;
 	
@@ -107,7 +105,7 @@ public class Douban {
         params.add(new BasicNameValuePair("form_email", form_email));
         params.add(new BasicNameValuePair("form_password", form_password));
         params.add(new BasicNameValuePair("redir", redir));
-        params.add(new BasicNameValuePair("source", "main"));
+        params.add(new BasicNameValuePair("source", "None"));
         params.add(new BasicNameValuePair("login", "登录"));
         httppost.setEntity(new UrlEncodedFormEntity(params));
         CloseableHttpResponse response = httpclient.execute(httppost);
@@ -124,8 +122,9 @@ public class Douban {
         	System.err.println("登录成功~");
         }
         
-        Header locationHeader = response.getFirstHeader("Location");
-    //    System.out.println("locationHeader.getValue()="+locationHeader.getValue());
+        
+        //Header locationHeader = response.getFirstHeader("Location");
+       // System.out.println("locationHeader.getValue()="+locationHeader.getValue());
         httppost.releaseConnection();
         
         return true;
@@ -217,13 +216,17 @@ public class Douban {
     	
    	 try{
    		 
-   		//String html=getPageHtml(url);
-   	    //System.out.println("html="+html);
-   		 
+   		String html=getPageHtml(url);
+   	    // System.out.println("html="+html);
+   		Pattern p=Pattern.compile("呃...你想要的东西不在这儿");
+   		Matcher m=p.matcher(html);
+   		if(m.find()){
+   			return false;
+   		}
    		
    	    HttpPost httppost = new HttpPost(url+"add_comment#last");
         List<NameValuePair> params2 = new ArrayList<NameValuePair>();
-        params2.add(new BasicNameValuePair("ck", "GWc8"));
+        params2.add(new BasicNameValuePair("ck", "-8d7"));
         params2.add(new BasicNameValuePair("rv_comment",getComment()));
         params2.add(new BasicNameValuePair("start", "0"));
         params2.add(new BasicNameValuePair("submit_btn", "加上去"));
