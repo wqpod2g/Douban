@@ -35,7 +35,7 @@ public class Douban {
 	
     private static String form_email="903183867@qq.com";//登录名
 	
-	private static String form_password="wqchina007008";//密码
+	private static String form_password="007008";//密码
 	
 	private static String redir="http://www.douban.com/people/mrnevermore/";//登录成功后跳转地址
 	
