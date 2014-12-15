@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,7 +34,7 @@ public class Douban {
 	
     private static String form_email="903183867@qq.com";//登录名
 	
-	private static String form_password="007008";//密码
+	private static String form_password="wqchina007008";//密码
 	
 	private static String redir="http://www.douban.com/people/mrnevermore/";//登录成功后跳转地址
 	
@@ -217,8 +216,13 @@ public class Douban {
     	
    	 try{
    		 
-   		//String html=getPageHtml(url);
-   	    //System.out.println("html="+html);
+   		String html=getPageHtml(url);
+   	    // System.out.println("html="+html);
+   		Pattern p=Pattern.compile("呃...你想要的东西不在这儿");
+   		Matcher m=p.matcher(html);
+   		if(m.find()){
+   			return false;
+   		}
    		 
    		
    	    HttpPost httppost = new HttpPost(url+"add_comment#last");
