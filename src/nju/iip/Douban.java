@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,17 +33,17 @@ import org.jsoup.select.Elements;
 
 public class Douban {
 	
-    private static String form_email="903183867@qq.com";//登录名
+    private static String form_email="13140714569";//登录名
 	
-	private static String form_password="wqchina007008";//密码
+	private static String form_password="";//密码
 	
-	private static String redir="http://www.douban.com/people/mrnevermore/";//登录成功后跳转地址
+	private static String redir="http://www.douban.com/people/82881030/";//登录成功后跳转地址
 	
 	private static CloseableHttpClient httpclient = HttpClients.createDefault();
 	
 	private static String login_url="http://www.douban.com/accounts/login";//登录页面url
 	
-	private static String group_url="http://www.douban.com/group/kaopulove/";//小组地址
+	private static String group_url="http://www.douban.com/group/haixiuzu/";//小组地址
 	
     private static int retry_times=0;
 	
@@ -223,11 +224,27 @@ public class Douban {
    		if(m.find()){
    			return false;
    		}
+   		
+   		Pattern p3=Pattern.compile("该话题已被小组管理员设为不允许回应");
+   		Matcher m3=p3.matcher(html);
+   		if(m3.find()){
+   			return false;
+   		}
+   		
+   		Pattern p2=Pattern.compile("请输入上图中的单词");
+   		Matcher m2=p2.matcher(html);
+   		if(m2.find()){
+   			System.out.println("要输验证码了~暂停10分钟");
+   		    Thread.sleep(600000);
+   		    return false;
+   		}
    		 
    		
    	    HttpPost httppost = new HttpPost(url+"add_comment#last");
+   	    httppost.addHeader("Connection", "keep-alive");
+   	    
         List<NameValuePair> params2 = new ArrayList<NameValuePair>();
-        params2.add(new BasicNameValuePair("ck", "GWc8"));
+        params2.add(new BasicNameValuePair("ck", "xNxg"));
         params2.add(new BasicNameValuePair("rv_comment",getComment()));
         params2.add(new BasicNameValuePair("start", "0"));
         params2.add(new BasicNameValuePair("submit_btn", "加上去"));
