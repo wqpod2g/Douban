@@ -8,13 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -33,11 +30,11 @@ import org.jsoup.select.Elements;
 
 public class Douban {
 	
-    private static String form_email="13140714569";//登录名
+    private static String form_email="";//登录名
 	
 	private static String form_password="";//密码
 	
-	private static String redir="http://www.douban.com/people/82881030/";//登录成功后跳转地址
+	private static String redir="";//登录成功后跳转地址
 	
 	private static CloseableHttpClient httpclient = HttpClients.createDefault();
 	
@@ -45,9 +42,6 @@ public class Douban {
 	
 	private static String group_url="http://www.douban.com/group/haixiuzu/";//小组地址
 	
-    private static int retry_times=0;
-	
-	private static int count=0;
 	
 	public static String downloadPic(String PageUrl,String destfilename) throws IOException{
     	Document doc = Jsoup.connect(PageUrl).get();
@@ -80,9 +74,8 @@ public class Douban {
         InputStream in = entity.getContent();
         try {
             FileOutputStream fout = new FileOutputStream(file);
-            int a = -1;
             byte[] tmp = new byte[2048]; 
-            while ((a = in.read(tmp)) != -1) {
+            while ((in.read(tmp)) != -1) {
                 fout.write(tmp);
             } 
             fout.close();
@@ -114,7 +107,6 @@ public class Douban {
         
         int statuts_code=response.getStatusLine().getStatusCode();
         
-       // System.out.println("response.getStatusLine()="+statuts_code);// 返回302
         if(statuts_code!=302){
         	System.err.println("登录失败~");
         	return false;
@@ -123,13 +115,8 @@ public class Douban {
         else{
         	System.err.println("登录成功~");
         }
-        
-        Header locationHeader = response.getFirstHeader("Location");
-    //    System.out.println("locationHeader.getValue()="+locationHeader.getValue());
         httppost.releaseConnection();
-        
         return true;
-        
 	}
 	
 	 /**
@@ -167,7 +154,6 @@ public class Douban {
     public static List<String>findTopic() throws IOException{
     	List<String>topic_list=new ArrayList<String>();
     	String pagehtml=getPageHtml(group_url);
-    	
     	Document doc=Jsoup.parse(pagehtml);
     	Elements es=doc.select("tr");
     	for(Element e:es){
@@ -181,17 +167,6 @@ public class Douban {
             		String url=p.attr("href");
             		topic_list.add(url);
     			}
-//    			else{
-//    			String num=s.substring(9,mat.group().length()-5);
-//    			int reply_num=Integer.parseInt(num);
-//    			Elements p=e.select("a[href]");
-//        		String url=p.attr("href");  
-//        		if(reply_num<=1){
-//        			topic_list.add(url);
-//        			//System.out.println(url);
-//        		}
-//        		
-//    			}
     		}
     		
     	}
@@ -215,62 +190,49 @@ public class Douban {
     
     public static boolean startPost(String url) {
     	
-   	 try{
-   		 
-   		String html=getPageHtml(url);
-   	    // System.out.println("html="+html);
-   		Pattern p=Pattern.compile("呃...你想要的东西不在这儿");
-   		Matcher m=p.matcher(html);
-   		if(m.find()){
-   			return false;
-   		}
-   		
-   		Pattern p3=Pattern.compile("该话题已被小组管理员设为不允许回应");
-   		Matcher m3=p3.matcher(html);
-   		if(m3.find()){
-   			return false;
-   		}
-   		
-   		Pattern p2=Pattern.compile("请输入上图中的单词");
-   		Matcher m2=p2.matcher(html);
-   		if(m2.find()){
-   			System.out.println("要输验证码了~暂停10分钟");
-   		    Thread.sleep(600000);
-   		    return false;
-   		}
-   		 
-   		
-   	    HttpPost httppost = new HttpPost(url+"add_comment#last");
-   	    httppost.addHeader("Connection", "keep-alive");
-   	    
-        List<NameValuePair> params2 = new ArrayList<NameValuePair>();
-        params2.add(new BasicNameValuePair("ck", "xNxg"));
-        params2.add(new BasicNameValuePair("rv_comment",getComment()));
-        params2.add(new BasicNameValuePair("start", "0"));
-        params2.add(new BasicNameValuePair("submit_btn", "加上去"));
-        httppost.setEntity(new UrlEncodedFormEntity(params2,"utf-8"));
-        CloseableHttpResponse response = httpclient.execute(httppost);
-        int status_code=response.getStatusLine().getStatusCode();
-        
-        if(status_code==302){
-       	 System.out.println("评论成功~ "+url);//评论成功
-       	 retry_times=0;  
-        }
-        else{
-       	 System.out.println("评论失败~ "+url);//评论失败
-       	 long time= System.currentTimeMillis();
-       	 Date date=new Date(time);
-       	 System.out.println(date.toLocaleString());  
-       	 retry_times++;
-//       	 if(retry_times>=3){
-//       		 System.out.println("暂停一小时~");
-//       		 Thread.sleep(3600000);
-//       	 }
-       	 
-        }
-        httppost.releaseConnection();
-        Thread.sleep(1500);
-   	 }catch(Exception e){
+    	try{
+    		String html=getPageHtml(url);
+       		Pattern p=Pattern.compile("呃...你想要的东西不在这儿");
+       		Matcher m=p.matcher(html);
+       		if(m.find()){
+       			return false;
+       		}
+       		
+       		Pattern p3=Pattern.compile("该话题已被小组管理员设为不允许回应");
+       		Matcher m3=p3.matcher(html);
+       		if(m3.find()){
+       			return false;
+       		}
+       		
+       		Pattern p2=Pattern.compile("请输入上图中的单词");
+       		Matcher m2=p2.matcher(html);
+       		if(m2.find()){
+       			System.out.println("要输验证码了~暂停10分钟");
+       		    Thread.sleep(600000);
+       		    return false;
+       		}
+       		 
+       	    HttpPost httppost = new HttpPost(url+"add_comment#last");
+       	    httppost.addHeader("Connection", "keep-alive");
+            List<NameValuePair> params2 = new ArrayList<NameValuePair>();
+            params2.add(new BasicNameValuePair("ck", "xNxg"));
+            params2.add(new BasicNameValuePair("rv_comment",getComment()));
+            params2.add(new BasicNameValuePair("start", "0"));
+            params2.add(new BasicNameValuePair("submit_btn", "加上去"));
+            httppost.setEntity(new UrlEncodedFormEntity(params2,"utf-8"));
+            CloseableHttpResponse response = httpclient.execute(httppost);
+            int status_code=response.getStatusLine().getStatusCode();
+            
+            if(status_code==302){
+           	 System.out.println("评论成功~ "+url);//评论成功
+            }
+            else{
+            	 System.out.println("评论失败~ "+url);//评论失败
+            }
+            httppost.releaseConnection();
+            Thread.sleep(1500);
+            
+    	}catch(Exception e){
    		 return false;
    	 }
    	 
@@ -283,7 +245,6 @@ public class Douban {
     		List<String>topic_list=findTopic();
     		for(String url:topic_list){
     			startPost(url);
-    			//System.out.println(url);
     		}
 			Thread.sleep(10000); // 设置暂停毫秒，防止引起豆瓣注意， 这个时间可长可短，根据需要
 			System.out.println("----------------------");  
